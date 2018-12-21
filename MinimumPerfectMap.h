@@ -21,7 +21,7 @@ namespace BBHash {
 		boomphf::mphf<_KeyType, GenericHasher>* bphf;
 
 		// keys
-		_KeyType* keysArray;
+		const _KeyType* keysArray;
 		unsigned  keysArrayLength;
 
 		// values
@@ -30,7 +30,7 @@ namespace BBHash {
 
 	public:
 
-		MinimumPerfectMap(_KeyType* keysArray, unsigned keysArrayLength, unsigned nThreads)
+		MinimumPerfectMap(const _KeyType* keysArray, unsigned keysArrayLength, unsigned nThreads)
 				: keysArray(keysArray)
 				, keysArrayLength(keysArrayLength) {
 
@@ -38,7 +38,7 @@ namespace BBHash {
 
 			// mphf takes as input a c++ range. A simple array of keys can be wrapped with boomphf::range
 			// but could be from a user defined iterator (enabling keys to be read from a file or from some complex non-contiguous structure)
-			boomphf::iter_range dataIterator = boomphf::range<_KeyType*>(keysArray, keysArray+keysArrayLength);
+			boomphf::iter_range dataIterator = boomphf::range<const _KeyType*>(keysArray, keysArray+keysArrayLength);
 
 			double gammaFactor = 1.0; // lowest bit/elem is achieved with gamma=1, higher values lead to larger mphf but faster construction/query
 
@@ -50,7 +50,6 @@ namespace BBHash {
 			unsigned max = 0;
 			for (unsigned i=0; i<keysArrayLength; i++) {
 				_KeyType key = keysArray[i];
-				cerr << key << endl;
 				unsigned index = bphf->lookup(key);
 				if (index < min) min = index;
 				if (index > max) max = index;
